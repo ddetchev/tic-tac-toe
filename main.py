@@ -1,5 +1,6 @@
 from asyncio.windows_events import NULL
 from random import randrange
+import random
 
 
 board = ["-", "-", "-",
@@ -25,20 +26,24 @@ def play():
         if check_winner():
             check_win = True
             print("The game has ended in a win!")
+            break
 
         if check_tier():
             check_tie = True
             print("The game has ended in a tie!")
+            break
 
         cpu_turn()
 
         if check_winner():
             check_win = True
             print("The game has ended in a win!")
+            break
 
         if check_tier():
             check_tie = True
             print("The game has ended in a tie!")
+            break
 
 
 def take_turn():
@@ -56,6 +61,9 @@ def take_turn():
 
 def cpu_turn():
     index = cpu_analyze_board()
+    if board[index] != "-":
+        while (board[index] != "-"):
+            index = randrange(9)
     board[index] = "O"
     print("CPU turn: ")
     display()
@@ -226,7 +234,9 @@ def cpu_analyze_board():
         return 2
     
 
-
+    # if there is no immediate win or immediate loss danger to play, go for the middle if available
+    if board[4] == "-":
+        return 4
 
     # return index of the best position of board for CPU to fill
     scores = [0, 0, 0,
@@ -252,7 +262,15 @@ def cpu_analyze_board():
             if (i >= 3 and scores[i - 3] != NULL and scores[i - 3] == "X"):
                 scores[i] += 10
     
-    return scores.index(max(scores))
+    # randomize index return if have multiple same max scores
+    maxi = max(scores)
+    arr = []
+
+    for i, v in enumerate(scores):
+        if v == maxi:
+            arr.append(i)
+    
+    return random.choice(arr)
 
 
 
